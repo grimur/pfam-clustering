@@ -60,6 +60,7 @@ def main():
     else:
         results = model.predict([vector])[0]
 
+    print(results)
     for idx, res in enumerate(results):
         if res > 0:
             print(idx, res)

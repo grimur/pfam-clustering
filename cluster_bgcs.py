@@ -82,9 +82,9 @@ def build_cluster_model(df, method='gaussian'):
         families.add(family)
 
     num_clusters = len(families)
-    if method is 'gaussian':
+    if method == 'gaussian':
         cluster_model = GaussianMixture(n_components=num_clusters)
-    elif method is 'multinomial':
+    elif method == 'multinomial':
         cluster_model = MultinomialMixture(n_components=num_clusters)
     else:
         raise ValueError('Unknown model %s' % method)
@@ -154,6 +154,7 @@ def read_from_family_file(family_file, pfs_dir):
                 pfs_roots = [x.split('.')[0] for x in pfs_list]
                 pfs_root_string = ' '.join(pfs_roots)
             yield '%s:%s' % (cluster_id, family_id), pfs_root_string
+    print('Read %s BGCs' % cnt)
 
 
 if __name__ == '__main__':

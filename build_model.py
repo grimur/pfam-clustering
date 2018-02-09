@@ -35,6 +35,7 @@ if __name__ == '__main__':
     parser.add_argument('-familyfile', help='family file', dest='familyfile', required=True)
     parser.add_argument('-pfs', help='pfs directory', dest='pfsdir', required=True)
     parser.add_argument('-dest', help='destination directory', dest='dest', required=True)
+    parser.add_argument('--type', help='Model type (multinomial, gaussian)', dest='model', required=False, default='multinomial')
 
     args = parser.parse_args()
 
@@ -69,7 +70,7 @@ if __name__ == '__main__':
         cPickle.dump(df, f)
     print('done.')
 
-    model_type = 'multinomial'
+    model_type = args.model
     print('Building %s model...' % model_type),
     cluster_model = build_cluster_model(df, method=model_type)
     # cluster_model = build_cluster_model(df, method='multinomial')
