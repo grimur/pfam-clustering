@@ -304,6 +304,11 @@ class MixtureModel(object):
         res = [numpy.argmax(x) for x in predictions]
         return res
 
+    def predict_with_proba(self, data):
+        predictions = self.predict_proba(data)
+        res = [numpy.argmax(x) for x in predictions]
+        return zip(res, [p[x] for p, x in zip(predictions, res)])
+
     def predict_log(self, data):
         predictions = []
         for v in data:
@@ -318,6 +323,8 @@ class MixtureModel(object):
     def predict_proba(self, data):
         log_predictions = self.predict_log(data)
         predictions = numpy.exp(log_predictions)
+
+        predictions = [w * x for w, x in zip(self.weights, predictions)]
 
         # normalise
         predictions = numpy.array([x / numpy.sum(x) for x in predictions])
