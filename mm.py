@@ -46,6 +46,14 @@ class Multinomial(object):
             self.verify_labels(labels)
             self.labels_verified = True
 
+    def get_probabilities(self):
+        keys = self.parameters.keys()
+        keys.sort()
+        return [self.parameters[x] for x in keys]
+
+    def get_probabilities_labels(self, labels):
+        return [self.parameters.get(x, 0.0) for x in labels]
+
 
 class Mixture(object):
     def __init__(self):
@@ -102,6 +110,9 @@ class Mixture(object):
                 dimension_binary_vector = dimension_data == label
                 new_probability = sum([x*y for x, y in zip(dimension_binary_vector, membership)]) / sum(membership)
                 dimension.parameters[label] = new_probability
+
+    def get_probabilities(self):
+        return [dist.get_probabilities() for dist in self.distributions]
 
 
 def update_parameters(old_parameters, dimension_data, membership, membership_sum):
@@ -324,7 +335,7 @@ class MixtureModel(object):
         log_predictions = self.predict_log(data)
         predictions = numpy.exp(log_predictions)
 
-        predictions = [w * x for w, x in zip(self.weights, predictions)]
+        predictions = [[w * y for w, y in zip(self.weights, y)] for y in predictions]
 
         # normalise
         predictions = numpy.array([x / numpy.sum(x) for x in predictions])
