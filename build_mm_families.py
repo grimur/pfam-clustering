@@ -55,6 +55,8 @@ def main():
     parser.add_argument('-m', dest='modelfile', help='Input model file', required=True)
     parser.add_argument('--families', dest='familyfile', help='bigscape family file', required=True)
     parser.add_argument('--pfs', dest='pfsdir', help='pfs file path', required=True)
+    parser.add_argument('--prob', dest='prob', help='Output classification probabilities', default=False, action='store_true')
+    parser.add_argument('-f', dest='filter', help='Filter probabilities (only output >0)', default=False, action='store_true')
 
     args = parser.parse_args()
 
@@ -70,36 +72,15 @@ def main():
         bgc_sample = read_pfs(bgc_path)
 
         bgc_vector = word_count_vector(bgc_sample, vocabulary, quiet=True)
-        results = model.predict_with_proba([bgc_vector])[0]
 
-        print('%s\t%s' % (bgc_id, results[0]))
-
-
-def _main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-m', dest='modelfile', help='Input model file', required=True)
-    parser.add_argument('-f', dest='inputfile', help='Pfam domains to classify', required=True)
-    parser.add_argument('-v', dest='verbose', help='Output all families', required=False, default=False, action='store_true')
-
-    args = parser.parse_args()
-
-    print('Loading model...')
-    vocabulary, model = load_model(args.modelfile)
-    print('Done.')
-    sample = read_pfs(args.inputfile)
-
-    vector = word_count_vector(sample, vocabulary)
-
-    if args.verbose:
-        # only have one vector, so...
-        results = model.predict_proba([vector])[0]
-    else:
-        results = model.predict_with_proba([vector])[0]
-
-    print(results)
-    for idx, res in enumerate(results):
-        if res > 0:
-            print(idx, res)
+        if args.prob:
+            results = model.predict_proba([bgc_vector])[0]
+            for family, prob in enumerate(results):
+                if not (prob == 0 and args.filter):
+                    print('%s\t%s\t%s' % (bgc_id, family, prob))
+        else:
+            results = model.predict_with_proba([bgc_vector])[0]
+            print('%s\t%s' % (bgc_id, results[0]))
 
 
 if __name__ == '__main__':
