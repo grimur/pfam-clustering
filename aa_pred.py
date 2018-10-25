@@ -184,16 +184,16 @@ def to_set(nested):
 def predict_aa(filename):
     asr = AntiSmashFile(filename)
     for item in asr.raw_data:
-        #for aa in item.get_probable_aa():
+        # for aa in item.get_probable_aa():
         for aa in AA_CODES:
             res = item.get_prob(aa)
-            print '%s,%s' % (aa, res)
+            yield aa, res
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('Predict AA specificity for gbk file')
     parser.add_argument('file', help='.gbk file with specificity predictions')
     args = parser.parse_args()
-    predict_aa(args.file)
 
-
+    for aa, res in predict_aa(args.file):
+        print '%s,%s' % (aa, res)
